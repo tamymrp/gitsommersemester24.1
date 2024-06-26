@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Organizer</h1>
+    <div class="container">
+        <div class="list">
+            <h2>To-Do List</h2>
+            <ul id="todo-list"></ul>
+            <input type="text" id="new-todo" placeholder="Neuer Task">
+            <button onclick="addTask('todo-list', 'new-todo')">Hinzufügen</button>
+        </div>
+        <div class="list">
+            <h2>Einkaufsliste</h2>
+            <ul id="shopping-list"></ul>
+            <input type="text" id="new-item" placeholder="Neues Item">
+            <button onclick="addTask('shopping-list', 'new-item')">Hinzufügen</button>
+        </div>
+        <div class="list">
+            <h2>Putzplan</h2>
+            <ul id="cleaning-schedule">
+                <li>Montag: Bad putzen</li>
+                <li>Dienstag: Küche putzen</li>
+                <li>Mittwoch: Flur staubsaugen</li>
+                <li>Donnerstag: Schlafzimmer putzen</li>
+                <li>Freitag: nass wischen</li>
+                <li>Samstag: Wäsche waschen</li>
+                <li>Sonntag: Ruhetag</li>
+            </ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
