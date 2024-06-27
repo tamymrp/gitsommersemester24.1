@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .list {
+            flex-basis: 30%;
+            padding: 20px;
+            background-color: #f5cbf4;
+            border-radius: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            width: calc(100% - 70px);
+            margin-right: 10px;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #9d00ff8d;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Organizer</h1>
+    <div class="container">
+        <div class="list">
+            <h2>To-Do List</h2>
+            <ul id="todo-list"></ul>
+            <input type="text" id="new-todo" placeholder="Neuer Task">
+            <button onclick="addTask('todo-list', 'new-todo')">Hinzufügen</button>
+        </div>
+        <div class="list">
+            <h2>Einkaufsliste</h2>
+            <ul id="shopping-list"></ul>
+            <input type="text" id="new-item" placeholder="Neues Item">
+            <button onclick="addTask('shopping-list', 'new-item')">Hinzufügen</button>
+        </div>
+        <div class="list">
+            <h2>Putzplan</h2>
+            <ul id="cleaning-schedule">
+                <li>Montag: Bad putzen</li>
+                <li>Dienstag: Küche putzen</li>
+                <li>Mittwoch: Flur staubsaugen</li>
+                <li>Donnerstag: Schlafzimmer putzen</li>
+                <li>Freitag: nass wischen</li>
+                <li>Samstag: Wäsche waschen</li>
+                <li>Sonntag: Ruhetag</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTasks('todo-list');
+            loadTasks('shopping-list');
+        });
+
+        function addTask(listId, inputId) {
+            const input = document.getElementById(inputId);
+            const taskText = input.value.trim();
+            if (taskText !== "") {
+                const task = { text: taskText, checked: false };
+                const taskElement = createTaskElement(task);
+                document.getElementById(listId).appendChild(taskElement);
+                saveTask(listId, task);
+                input.value = "";
+            }
+        }
+
+        function createTaskElement(task) {
+            const li = document.createElement('li');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = task.checked;
+            checkbox.addEventListener('change', updateTasks);
+            const span = document.createElement('span');
+            span.textContent = task.text;
+            span.contentEditable = true;
+            span.addEventListener('blur', updateTasks);
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Löschen';
+            deleteButton.addEventListener('click', function() {
+                li.remove();
+                updateTasks();
+            });
+            li.appendChild(checkbox);
+            li.appendChild(span);
+            li.appendChild(deleteButton);
+            return li;
+        }
+
+        function saveTask(listId, task) {
+            const tasks = JSON.parse(localStorage.getItem(listId)) || [];
+            tasks.push(task);
+            localStorage.setItem(listId, JSON.stringify(tasks));
+        }
+
+        function loadTasks(listId) {
+            const list = document.getElementById(listId);
+            const tasks = JSON.parse(localStorage.getItem(listId)) || [];
+            tasks.forEach(task => {
+                const taskElement = createTaskElement(task);
+                list.appendChild(taskElement);
+            });
+        }
+
+        function updateTasks() {
+            ['todo-list', 'shopping-list'].forEach(listId => {
+                const listElement = document.getElementById(listId);
+                const tasks = [];
+                listElement.querySelectorAll('li').forEach(li => {
+                    const task = {
+                        text: li.querySelector('span').textContent,
+                        checked: li.querySelector('input').checked
+                    };
+                    tasks.push(task);
+                });
+                localStorage.setItem(listId, JSON.stringify(tasks));
+            });
+        }
+    </script>
+</body>
+</html>
+
+
