@@ -1,3 +1,5 @@
+// Server Setup 
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -9,10 +11,7 @@ const PORT = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-mongoose.connect('mongodb://localhost:27017/organizer', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+mongoose.connect('mongodb://localhost:27017/organizer');
 
 mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB');
@@ -27,6 +26,7 @@ const taskSchema = new mongoose.Schema({
 
 const Task = mongoose.model('Task', taskSchema);
 
+// GET anfrage -> Laden der Aufgabe 
 
 app.get('/tasks', async (req, res) => {
     try {
@@ -36,6 +36,7 @@ app.get('/tasks', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+// Post Anfrage -> Hinzufügen von Aufgabe 
 
 app.post('/tasks', async (req, res) => {
     const task = new Task({
@@ -49,6 +50,7 @@ app.post('/tasks', async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 });
+// Put Anfrage -> Aktualisieren der Aufgaben 
 
 app.put('/tasks/:id', async (req, res) => {
     try {
@@ -64,6 +66,7 @@ app.put('/tasks/:id', async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 });
+// Delete Anfrage --> LÖschen von Aufgabe
 
 app.delete('/tasks/:id', async (req, res) => {
     try {
@@ -74,6 +77,23 @@ app.delete('/tasks/:id', async (req, res) => {
         res.json({ message: 'Task deleted' });
     } catch (err) {
         res.status(500).json({ message: err.message });
+    }
+});
+
+// PUT Anfrage für BULK-UPDATE
+app.put('/tasks/bulk-update', async (req, res) => {
+    try {
+        const updates = req.body;
+        const bulkOps = updates.map(task => ({
+            updateOne: {
+                filter: { _id: task._id },
+                update: { $set: { text: task.text, checked: task.checked } }
+            }
+        }));
+        await Task.bulkWrite(bulkOps);
+        res.json({ message: 'Tasks updated' });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 });
 
